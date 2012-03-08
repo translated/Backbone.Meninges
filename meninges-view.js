@@ -36,7 +36,9 @@ Backbone.MeningesView = {
       var oldValue = currentModel.get(_(pathItems).last());
       var originalValue = originalModel ? originalModel.get(_(pathItems).last()) : null;
       if (_(originalValue).isNumber()) {
-        value = parseFloat(value) || null;
+        var parsedValue = parseFloat(value);
+        value = _(parsedValue).isNaN() ? value : parsedValue;
+        value = value === '' ? null : value;
       }
       if (value === '' && originalValue === null) {
         value = null;
