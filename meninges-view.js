@@ -34,7 +34,7 @@ Backbone.MeningesView = {
 
       var newValueHash = {};
       var oldValue = currentModel.get(_(pathItems).last());
-      var originalValue = originalModel.get(_(pathItems).last());
+      var originalValue = originalModel ? originalModel.get(_(pathItems).last()) : null;
       if (_(originalValue).isNumber()) {
         value = parseFloat(value) || null;
       }
@@ -53,6 +53,7 @@ Backbone.MeningesView = {
       var pathItems = event.target.name.split(".");
       var value = extractValue(event.target);
       o.updateAttribute.call(this, pathItems, value)
+      event.stopImmediatePropagation();
     };
 
     var render = o.render;
