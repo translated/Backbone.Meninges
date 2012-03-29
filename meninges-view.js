@@ -15,6 +15,9 @@ Backbone.MeningesView = {
       if (element.type === "checkbox") {
         return element.checked;
       }
+      if (element.type === "radio") {
+        return $("input[name='" + element.name + "']:checked").val();
+      }
       return element.value || '';
     };
 

@@ -66,8 +66,8 @@ describe("meninges views", function () {
           '<input name="author.country.name" class="meninges" type="text">"' +
           '<select name="author.country.continent" class="meninges">' +
           '<option value="europe">europe</option><option value="afrique">afrique</option></select>' +
-          '<input name="links:0.type" class="meninges" type="radio" value="buy" checked="checked" /> Buy' +
-          '<input name="links:0.type" class="meninges" type="radio" value="read" /> Read' +
+          '<input id="buy" name="links:0.type" class="meninges" type="radio" value="buy" checked="checked" /> Buy' +
+          '<input id="read" name="links:0.type" class="meninges" type="radio" value="read" /> Read' +
           '<input name="author.is_dead" class="meninges" type="checkbox" />';
       $(this.el).html(html);
       $("#book-form-container").html(this.el);
@@ -245,12 +245,18 @@ describe("meninges views", function () {
 
     describe("radiobutton input", function () {
       _(["blur", "change"]).each(function (eventName) {
-        it("should set true on the model when the checkbox is ticked (and false when un-ticked) for a '" + eventName + "' event", function () {
-          $("input[name='author.is_dead']").prop("checked", false).trigger(eventName);
-          expect(book.get("author").get("is_dead")).toEqual(false);
+        it("should set true on the model when the radio is ticked (and false when un-ticked) for a '" + eventName + "' event", function () {
+          $("input[id='read']").attr("checked", 'checked').trigger(eventName);
+          expect(book.get("links").at(0).get('type')).toEqual('read');
         });
       });
 
+      _(["blur", "change"]).each(function (eventName) {
+        it("should check for the checked element on " + eventName + " event with a radio group", function() {
+          $("input[id='read']").trigger(eventName);
+          expect(book.get("links").at(0).get('type')).toEqual('buy');
+        });
+      });
     });
 
     it("should be updated in the json output as well", function () {
