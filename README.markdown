@@ -1,6 +1,3 @@
-I'm in the process of making this library work with backbone.js version 0.9.2. It currently works with version 0.5.2.
----------------------------------------------------------------------------------------------------------------------
-
 Meninges models let you load deep domain models into backbone models by declaring associations (rather than coding the relationships manually).
 Meninges also provides a FormView that binds blur events on html form inputs to a function refreshing the backing MeningesModel from the form values.
 

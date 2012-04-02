@@ -80,7 +80,7 @@ describe("meninges models", function () {
 
   SomeApp.TopLevel = Backbone.MeningesModel.extend({
     associations: {
-      "configuration": {model: "SomeApp.Configuration"},
+      "configuration": {model: "SomeApp.Configuration"}
     }
   });
 

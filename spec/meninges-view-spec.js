@@ -34,13 +34,14 @@ describe("meninges views", function () {
     }
   });
 
+  Meninges.Link = Backbone.Model.extend();
+
   Meninges.Links = Backbone.Collection.extend({
     model: Meninges.Link,
     proveImALinksCollection: function () {
     }
   });
 
-  Meninges.Link = Backbone.Model.extend();
 
   Meninges.Book = Backbone.MeningesModel.extend({
     associations: {
@@ -74,7 +75,7 @@ describe("meninges views", function () {
     }
   });
 
-  xdescribe("events", function () {
+  describe("events", function () {
 
     beforeEach(function () {
       book = new Meninges.Book(data());
@@ -203,7 +204,7 @@ describe("meninges views", function () {
         expect(originalModel).toBeDefined();
       });
 
-      describe('making a change to model', function () {
+      xdescribe('making a change to model', function () {
         beforeEach(function () {
           expect(originalModel.get('age')).not.toEqual(30);
 
