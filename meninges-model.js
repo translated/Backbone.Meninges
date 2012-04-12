@@ -45,7 +45,8 @@ Backbone.MeningesModel = Backbone.Model.extend({
   replaceWithMeningesAttributes: function (attrs) {
     if (this.associations) {
       var self = this;
-      _(_(this.associations).keys()).each(function (key) {
+      var associationsForAttrs = _(_(this.associations).keys()).intersection(_(attrs).keys());
+      _(associationsForAttrs).each(function (key) {
         var obj = self.lookupConstructor(self.associations[key].model);
         if (obj !== undefined) {
           if (self.get(key) && self.get(key) instanceof Backbone.Model) {
