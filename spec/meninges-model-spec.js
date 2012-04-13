@@ -6,6 +6,16 @@ describe("meninges models", function () {
     return {
       id: 1,
       configuration: {
+        feature_toggles: [
+          {
+            key: 'awesomeness1',
+            enabled: 'on'
+          }, 
+          {
+            key: 'awesomeness2',
+            enabled: 'off'
+          }
+        ],
         roles: [
           {
             name: "this and that",
@@ -40,6 +50,13 @@ describe("meninges models", function () {
   
   window.SomeApp = {};
 
+  SomeApp.FeatureToggle = Backbone.Model.extend({
+  });
+
+  SomeApp.FeatureToggles = Backbone.Collection.extend({
+    model: SomeApp.FeatureToggle
+  });
+
   SomeApp.Authorization = Backbone.Model.extend({
     equals: function (json) {
       try {
@@ -56,11 +73,11 @@ describe("meninges models", function () {
   
   SomeApp.Role = Backbone.MeningesModel.extend({
     associations: {
-      "authorizations": {model: "SomeApp.Authorizations"} 
+      "authorizations": {model: "SomeApp.Authorizations"}
     },
 
     equals: function (json) {
-      try { 
+      try {
         return this.get("name") == json.name;
       } catch(e) {
         return false;
@@ -74,7 +91,8 @@ describe("meninges models", function () {
 
   SomeApp.Configuration = Backbone.MeningesModel.extend({
     associations: {
-      "roles": {model: "SomeApp.Roles"}
+      "roles": {model: "SomeApp.Roles"},
+      "feature_toggles": {model: "SomeApp.FeatureToggles"}
     }
   });
 
@@ -112,10 +130,19 @@ describe("meninges models", function () {
   });
 
   describe("fetch and save, via set and parse", function () {
-    
+
     var topLevel = new SomeApp.TopLevel();
     topLevel.set(topLevel.parse(data()));
     testDeepNesting(topLevel);
+
+    it("should update nested models when set is called with partial update", function() {
+      topLevel.set(topLevel.parse({ configuration: { feature_toggles: [ { key: 'new_key', enabled: 'on' } ] } }));
+
+      var featureToggles = topLevel.get("configuration").get("feature_toggles");
+      expect(featureToggles.length).toBe(1);
+      expect(featureToggles.at(0).get('key')).toBe("new_key");
+    });
+
   });
 
   describe("re-using existing nested objects when parsing is called", function () {
@@ -135,7 +162,7 @@ describe("meninges models", function () {
       authorizations = firstRole.get("authorizations");
       firstAuthorization = authorizations.at(0);
     });
-      
+
     it("should re-use the existing nested models when set is called", function () {
       topLevel.set(topLevel.parse(data()));
       expect(configuration).toEqual(topLevel.get("configuration"));
