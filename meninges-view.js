@@ -1,6 +1,18 @@
 Backbone.MeningesView = {
   extend: function (o) {
 
+    var coerceType = function (originalValue, value) {
+        if (_(originalValue).isNumber()) {
+          var parsedValue = parseFloat(value);
+          value = _(parsedValue).isNaN() ? value : parsedValue;
+          value = value === '' ? null : value;
+        }
+        if (value === '' && originalValue === null) {
+          value = null;
+        }
+        return value;
+    }
+
     var findNextModel = function (startingModel, pathElement) {
       if (pathElement.indexOf(":") === -1) {
         return startingModel.get(pathElement);
@@ -35,22 +47,24 @@ Backbone.MeningesView = {
         originalModel = findNextModel(originalModel, pathItems[i]);
       }
 
-      var newValueHash = {};
-      var oldValue = currentModel.get(_(pathItems).last());
-      var originalValue = originalModel ? originalModel.get(_(pathItems).last()) : null;
-      if (_(originalValue).isNumber()) {
-        var parsedValue = parseFloat(value);
-        value = _(parsedValue).isNaN() ? value : parsedValue;
-        value = value === '' ? null : value;
-      }
-      if (value === '' && originalValue === null) {
-        value = null;
-      }
+      var key = _(pathItems).last();
 
-      var sameValue = (oldValue === value);
-      newValueHash[_(pathItems).last()] = value;
-      if (!sameValue) {
-        currentModel.set(newValueHash);
+      if (key.indexOf(":") === -1) {
+        var newValueHash = {};
+        var oldValue = currentModel.get(key);
+        var originalValue = originalModel ? originalModel.get(_(pathItems).last()) : null;
+        var value = coerceType(originalValue, value);
+
+        var sameValue = (oldValue === value);
+        newValueHash[_(pathItems).last()] = value;
+        if (!sameValue) {
+          currentModel.set(newValueHash);
+        }
+      } else {
+        var elements = key.split(":");
+        var collection = currentModel.get(elements[0]);
+        var index = elements[1];
+        collection[index] = coerceType(collection[index], value);
       }
     };
 
