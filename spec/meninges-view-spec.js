@@ -20,7 +20,8 @@ describe("meninges views", function () {
       links: [
         {type: "buy", uri: "http://amazon.fr/123"},
         {type: "read", uri: "http://livresenligne.fr/lemenon"}
-      ]
+      ],
+      publishers: ["Penguin", "Random House"]
     };
   };
 
@@ -69,7 +70,9 @@ describe("meninges views", function () {
           '<option value="europe">europe</option><option value="afrique">afrique</option></select>' +
           '<input id="buy" name="links:0.type" class="meninges" type="radio" value="buy" checked="checked" /> Buy' +
           '<input id="read" name="links:0.type" class="meninges" type="radio" value="read" /> Read' +
-          '<input name="author.is_dead" class="meninges" type="checkbox" />';
+          '<input name="author.is_dead" class="meninges" type="checkbox" />' +
+          '<input name="publishers:0" class="meninges" type="text" />';
+          '<input name="publishers:1" class="meninges" type="text" />';
       $(this.el).html(html);
       $("#book-form-container").html(this.el);
     }
@@ -231,6 +234,11 @@ describe("meninges views", function () {
       it("should synchronise collections as well as models", function () {
         $($("input[name='links:0.type']")[1]).click();
         expect(book.get("links").at(0).get("type")).toEqual("read");
+      });
+
+      it("should synchronise arrays on models", function () {
+        $("input[name='publishers:0']").val("My New Publisher").trigger("blur");
+        expect(book.get("publishers")[0]).toEqual("My New Publisher");
       });
     });
 
