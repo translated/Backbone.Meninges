@@ -84,13 +84,13 @@ Backbone.MeningesModel = Backbone.Model.extend({
       if (!matched) {
         modelsToRemove.push(model);
       }
+      _(indexesToRemove).each(function (index) {
+        delete els[index];
+      });
     });
 
     _(modelsToRemove).each(function (model) {
       collection.remove(model);
-    });
-    _(indexesToRemove).each(function (index) {
-      delete els[index];
     });
 
     _(els).each(function (el) {
