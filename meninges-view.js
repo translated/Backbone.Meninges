@@ -48,23 +48,27 @@ Backbone.MeningesView = {
       }
 
       var key = _(pathItems).last();
-
+      var newValueHash = {};
+      var sameValue = true;
+      
       if (key.indexOf(":") === -1) {
-        var newValueHash = {};
         var oldValue = currentModel.get(key);
         var originalValue = originalModel ? originalModel.get(_(pathItems).last()) : null;
         var value = coerceType(originalValue, value);
 
-        var sameValue = (oldValue === value);
+        sameValue = (oldValue === value);
         newValueHash[_(pathItems).last()] = value;
-        if (!sameValue) {
-          currentModel.set(newValueHash);
-        }
       } else {
         var elements = key.split(":");
-        var collection = currentModel.get(elements[0]);
+        var key = elements[0];
         var index = elements[1];
+        var collection = _(currentModel.get(key)).clone();
         collection[index] = coerceType(collection[index], value);
+        newValueHash[key] = collection;
+        sameValue = (collection[index] === currentModel.get(key)[index])
+      }
+      if (!sameValue) {
+        currentModel.set(newValueHash);
       }
     };
 
