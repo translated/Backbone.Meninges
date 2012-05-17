@@ -59,11 +59,11 @@ describe("meninges models", function () {
 
   SomeApp.Authorization = Backbone.Model.extend({
     equals: function (json) {
-      try {
+      // try {
         return this.get("name") == json.name;
-      } catch (e) {
-        return false;
-      }
+      // } catch (e) {
+      //   return false;
+      // }
     }
   });
   
@@ -102,6 +102,26 @@ describe("meninges models", function () {
     }
   });
 
+  SomeApp.Permission = Backbone.MeningesModel.extend({
+    associations: {
+      "authorization": {model: "SomeApp.Authorization"} 
+    },
+    
+    equals: function (json) {
+      return this.get('authorization').equals(json.authorization);
+    }
+    
+  });
+
+  SomeApp.Permissions = Backbone.Collection.extend({
+    model: SomeApp.Permission
+  });
+
+  SomeApp.Security = Backbone.MeningesModel.extend({
+    associations: {
+      "permissions": {model: "SomeApp.Permissions"}
+    }
+  });
 
   var testDeepNesting = function (topLevel) {
     it("should load nested models", function () {
@@ -210,6 +230,34 @@ describe("meninges models", function () {
     });
   });
 
+  describe("update a collection of simple backbone objects", function() {
+    var security;
+    
+    beforeEach(function() {
+      var data = {
+        permissions : [{
+          authorization : {
+            name : 'can change'
+          }
+        },
+        {
+          authorization : {
+            name : 'cannot change'
+          }
+        }]
+      };
+      var permissions = new SomeApp.Permissions(data.permissions);
+      security = new SomeApp.Security();
+      security.set({permissions : permissions}, {silent : true});
+      security.set(security.parse(data));
+    });
+    
+    it("works", function() {
+      expect(security.get('permissions').length).toEqual(2);
+    });
+    
+  });
+  
   describe('clone', function () {
     it('should do a deep clone', function () {
       var original = new SomeApp.TopLevel(data());

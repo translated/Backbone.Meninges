@@ -236,10 +236,47 @@ describe("meninges views", function () {
         expect(book.get("links").at(0).get("type")).toEqual("read");
       });
 
-      it("should synchronise arrays on models", function () {
-        $("input[name='publishers:0']").val("My New Publisher").trigger("blur");
-        expect(book.get("publishers")[0]).toEqual("My New Publisher");
+      describe("arrays on models", function () {
+        var changeEventFired;
+
+        beforeEach(function () {
+          book.bind('change:publishers', function () {
+            changeEventFired = true;
+          });
+        });
+
+        describe("with new value", function () {
+          
+          beforeEach(function () {
+            changeEventFired = false
+            $("input[name='publishers:0']").val("My New Publisher").trigger("blur");
+          });
+        
+          it("should synchronise arrays on models", function () {
+            expect(book.get("publishers")[0]).toEqual("My New Publisher");
+          });
+
+          it("should fire a change event on the model", function () {
+            expect(changeEventFired).toBeTruthy();
+          });
+
+        });
+        
+        describe("with same value", function () {
+
+          beforeEach(function () {
+            changeEventFired = false;
+            $("input[name='publishers:0']").val("Penguin").trigger("blur");
+          });
+        
+          it("should not fire a change event on the model", function () {
+            expect(changeEventFired).toBeFalsy();
+          });
+          
+        });
+
       });
+      
     });
 
     describe("boolean values (checkboxes)", function () {
@@ -261,7 +298,7 @@ describe("meninges views", function () {
       });
 
       _(["blur", "change"]).each(function (eventName) {
-        it("should check for the checked element on " + eventName + " event with a radio group", function() {
+        it("should check for the checked element on " + eventName + " event with a radio group", function () {
           $("input[id='read']").trigger(eventName);
           expect(book.get("links").at(0).get('type')).toEqual('buy');
         });
